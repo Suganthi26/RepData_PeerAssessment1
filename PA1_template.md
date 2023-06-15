@@ -2,7 +2,11 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
+    fig_caption: yes
     keep_md: true
+    toc: yes
+    pdf_document: default
+self_contained: no    
 ---
 ## Packages used
 
@@ -148,5 +152,19 @@ hist(stepsperday$sumsteps, main = "Histogram of Daily Steps",
   d. (contd.) Calculate and report the mean and median total number of steps taken each day. Has the value changed from what was initially reported? What is the impact of imputing missing data on the estimates of total number of steps?
   
 
+```r
+meanNA <- round(mean(stepsperday$sumsteps), digits = 2)
+medianNA <- round(median(stepsperday$sumsteps), digits = 2)
+
+print(paste("The mean is", mean(meanNA)))
+```
+
+[1] "The mean is 10766.19"
+
+```r
+print(paste("The median is", median(medianNA)))
+```
+
+[1] "The median is 10766.19"
 
 ### Question 4: Are there differences in activity patterns between weekdays and weekends?
