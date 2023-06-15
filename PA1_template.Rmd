@@ -5,14 +5,14 @@ output:
     keep_md: true
 ---
 ## Packages used
-```{r results="hide"}
+```{r packages, results="hide"}
 library(ggplot2)
 library(dplyr)
 ```
 
 ## Loading and preprocessing the data
 Downloading and unzipping file for processing. Read and load CSV file into a dataframe. 
-``` {r results="hide"}
+``` {r loading data, results="hide"}
 if(!file.exists("./data")){dir.create("./data")}
 fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(fileUrl,destfile = "./data/activity.zip", method = "curl")
@@ -25,18 +25,18 @@ activity$date <-as.Date(activity$date)
 ## Data Analysis
 ### Question 1 : What is mean total number of steps taken per day?
   a. Calculating total number of steps per day
-```{r echo=TRUE, results='asis'}
+```{r total steps, echo=TRUE, results='asis'}
 stepsperday <- activity %>% group_by(date) %>%
   summarize(sumsteps = sum(steps, na.rm = TRUE))
 ```
   b.  Make a histogram of the results
-```{r echo=TRUE, results='asis'}
+```{r histogram, echo=TRUE, results='asis'}
 hist(stepsperday$sumsteps, main = "Histogram of Daily Steps", 
      col = "darkblue", xlab = "Steps", ylim = c(0,30))
 ```  
   
   c. Calculate and report the mean and median total number of steps taken per day
-``` {r echo=TRUE, results='asis'}
+``` {r mean and median, echo=TRUE, results='asis'}
 meansteps <- round(mean(stepsperday$sumsteps))
 mediansteps <- round(median(stepsperday$sumsteps))
 print(paste("The mean is", meansteps))
@@ -46,7 +46,7 @@ print(paste("The median is ", mediansteps))
 ### Question 2: What is the average daily activity pattern?
   a.    Make a time series plot of the 5-minute interval (x-axis), and the average number of steps taken, averaged across all days (y-axis)
   
-``` {r echo = TRUE, results='asis'}
+``` {r time series plot, echo = TRUE, results='asis'}
 stepsperinterval <- activity %>% group_by(interval) %>%
   summarize(meansteps1 = mean(steps, na.rm = TRUE))
 
@@ -56,13 +56,50 @@ plot(stepsperinterval$meansteps1 ~ stepsperinterval$interval,
 ```    
 
   b. Which 5-minute interval, on average across all days in the dataset, contains the maximum number of steps?
-```{r echo=TRUE, results='asis'}
-print(paste("The 5-minute interval containing the most steps on average is", stepsperinterval$interval[which.max(stepsperinterval$meansteps1)]))
+```{r max steps, echo=TRUE, results='asis'}
+print(paste("The 5-minute interval containing the most steps on average is",
+            stepsperinterval$interval[which.max(stepsperinterval$meansteps1)]))
 print(paste("Average steps for that interval is", round(max(stepsperinterval$meansteps1))))
 ```
 
-### Question 3: Inputing missing values
+### Question 3: Imputing missing values
+  a. Calculate and report the total number of missing values in the dataset. 
+```{r missing, echo=TRUE, results='asis'}
+print(paste("The total number of rows with missing values is",
+            sum(is.na(activity$steps))))
+```  
 
+  b. Devise a strategy for filling all the missing values in the dataset. 
+  
+  One of the strategies for filling all the values in the dataset is to input the average of the associated interval. This was already calculated in the previous step, and using a loop all NA values can be identified and then transformed by associating the appropriate interval with the "steps" value in the 'stepsperinterval' data frame created in the previous step.   
+  
+  c. Create a new dataset that is equal to the previous dataset but with all missing values filled in. 
+  
+```{r new dataset, echo=TRUE, results='hide'}
+activitynoNA <- activity
+for (i in 1:nrow(activity)) {
+  if(is.na(activity$steps[i])){
+    activitynoNA$steps[i] <- stepsperinterval$meansteps1[activitynoNA$interval[i] == stepsperinterval$interval]
+  }
+  
+}
+```  
 
+  d. Make a histogram of total number of steps taken each day
+
+``` {r new histogram, echo=TRUE, results='asis'}
+stepsperday <- activitynoNA %>%
+  group_by(date) %>%
+  summarize(sumsteps = sum(steps, na.rm = TRUE))
+
+hist(stepsperday$sumsteps, main = "Histogram of Daily Steps",
+     col = "lightblue", xlab = "Steps")
+```  
+
+  d. (contd.) Calculate and report the mean and median total number of steps taken each day. Has the value changed from what was initially reported? What is the impact of imputing missing data on the estimates of total number of steps?
+  
+```{r new mean and median, echo=TRUE, results='asis'}
+
+```
 
 ### Question 4: Are there differences in activity patterns between weekdays and weekends?
