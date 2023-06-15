@@ -6,6 +6,7 @@ output:
     keep_md: true
     toc: yes
     pdf_document: default
+keep_md: true
 self_contained: no    
 ---
 ## Packages used

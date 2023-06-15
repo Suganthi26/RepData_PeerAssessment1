@@ -6,6 +6,7 @@ output:
     keep_md: true
     toc: yes
     pdf_document: default
+keep_md: true
 self_contained: no    
 ---
 ## Packages used
@@ -91,7 +92,7 @@ plot(stepsperinterval$meansteps1 ~ stepsperinterval$interval,
      ylab = "Average number of steps", main = "Steps By Time Interval")
 ```
 
-![](PA1_template_files/figure-html/time series plot-1.png)<!-- -->
+![](PA1_template_files/figure-html/time-series-plot-1.png)<!-- -->
 
   b. Which 5-minute interval, on average across all days in the dataset, contains the maximum number of steps?
 
@@ -147,7 +148,7 @@ hist(stepsperday$sumsteps, main = "Histogram of Daily Steps",
      col = "lightblue", xlab = "Steps")
 ```
 
-![](PA1_template_files/figure-html/new histogram-1.png)<!-- -->
+![](PA1_template_files/figure-html/new-histogram-1.png)<!-- -->
 
   d. (contd.) Calculate and report the mean and median total number of steps taken each day. Has the value changed from what was initially reported? What is the impact of imputing missing data on the estimates of total number of steps?
   
