@@ -475,6 +475,13 @@ steps taken each day. Has the value changed from what was initially
 reported? What is the impact of imputing missing data on the estimates
 of total number of steps?</li>
 </ol>
+<pre class="r"><code>meanNA &lt;- round(mean(stepsperday$sumsteps), digits = 2)
+medianNA &lt;- round(median(stepsperday$sumsteps), digits = 2)
+
+print(paste(&quot;The mean is&quot;, mean(meanNA)))</code></pre>
+<p>[1] “The mean is 10766.19”</p>
+<pre class="r"><code>print(paste(&quot;The median is&quot;, median(medianNA)))</code></pre>
+<p>[1] “The median is 10766.19”</p>
 </div>
 <div id="question-4-are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level3">
 <h3>Question 4: Are there differences in activity patterns between
