@@ -50,7 +50,7 @@ print(paste("The median is ", mediansteps))
 ### Question 2: What is the average daily activity pattern?
   a.    Make a time series plot of the 5-minute interval (x-axis), and the average number of steps taken, averaged across all days (y-axis)
   
-``` {r time series plot, echo = TRUE, results='asis'}
+``` {r time-series-plot, echo = TRUE, results='asis'}
 stepsperinterval <- activity %>% group_by(interval) %>%
   summarize(meansteps1 = mean(steps, na.rm = TRUE))
 
@@ -91,7 +91,7 @@ for (i in 1:nrow(activity)) {
 
   d. Make a histogram of total number of steps taken each day
 
-``` {r new histogram, echo=TRUE, results='asis'}
+``` {r new-histogram, echo=TRUE, results='asis'}
 stepsperday <- activitynoNA %>%
   group_by(date) %>%
   summarize(sumsteps = sum(steps, na.rm = TRUE))
