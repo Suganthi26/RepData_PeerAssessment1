@@ -71,13 +71,17 @@ mediansteps <- round(median(stepsperday$sumsteps))
 print(paste("The mean is", meansteps))
 ```
 
-[1] "The mean is 9354"
+```
+## [1] "The mean is 9354"
+```
 
 ```r
 print(paste("The median is ", mediansteps))
 ```
 
-[1] "The median is  10395"
+```
+## [1] "The median is  10395"
+```
 
 ### Question 2: What is the average daily activity pattern?
   a.    Make a time series plot of the 5-minute interval (x-axis), and the average number of steps taken, averaged across all days (y-axis)
@@ -101,13 +105,17 @@ print(paste("The 5-minute interval containing the most steps on average is",
             stepsperinterval$interval[which.max(stepsperinterval$meansteps1)]))
 ```
 
-[1] "The 5-minute interval containing the most steps on average is 835"
+```
+## [1] "The 5-minute interval containing the most steps on average is 835"
+```
 
 ```r
 print(paste("Average steps for that interval is", round(max(stepsperinterval$meansteps1))))
 ```
 
-[1] "Average steps for that interval is 206"
+```
+## [1] "Average steps for that interval is 206"
+```
 
 ### Question 3: Imputing missing values
   a. Calculate and report the total number of missing values in the dataset. 
@@ -117,7 +125,9 @@ print(paste("The total number of rows with missing values is",
             sum(is.na(activity$steps))))
 ```
 
-[1] "The total number of rows with missing values is 2304"
+```
+## [1] "The total number of rows with missing values is 2304"
+```
 
   b. Devise a strategy for filling all the missing values in the dataset. 
   
@@ -160,12 +170,73 @@ medianNA <- round(median(stepsperday$sumsteps), digits = 2)
 print(paste("The mean is", mean(meanNA)))
 ```
 
-[1] "The mean is 10766.19"
+```
+## [1] "The mean is 10766.19"
+```
 
 ```r
 print(paste("The median is", median(medianNA)))
 ```
 
-[1] "The median is 10766.19"
+```
+## [1] "The median is 10766.19"
+```
+
+
+```r
+library(xtable)
+NAcompare <- data.frame(mean = c(meansteps, meanNA), median = c(mediansteps, medianNA))
+rownames(NAcompare) <- c("Pre NA transformation", "Post NA Transformation")
+xt <- xtable(NAcompare)
+print (xt, type="html")
+```
+
+<!-- html table generated in R 4.3.0 by xtable 1.8-4 package -->
+<!-- Fri Jun 16 08:12:27 2023 -->
+<table border=1>
+<tr> <th>  </th> <th> mean </th> <th> median </th>  </tr>
+  <tr> <td align="right"> Pre NA transformation </td> <td align="right"> 9354.00 </td> <td align="right"> 10395.00 </td> </tr>
+  <tr> <td align="right"> Post NA Transformation </td> <td align="right"> 10766.19 </td> <td align="right"> 10766.19 </td> </tr>
+   </table>
+
+
+As we can see, when the missing values are included we see an increase in the mean and median values from 9354 and 10395 to 10766.19 for both respectively. 
 
 ### Question 4: Are there differences in activity patterns between weekdays and weekends?
+  a. Create a new factor variable in the dataset with two levels- "weekday" and "weekend" indicating whether a given date is a weekday or a weekend.
+  
+
+```r
+activityDoW <- activitynoNA
+activityDoW$date <- as.Date(activityDoW$date)
+activityDoW$day <- ifelse(weekdays(activityDoW$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+activityDoW$day <- as.factor(activityDoW$day)
+```
+
+  b. Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+
+```r
+activityweekday <- filter(activityDoW, activityDoW$day == "weekday")
+activityweekend <- filter(activityDoW, activityDoW$day == "weekend")
+
+activityweekday <- activityweekday %>% 
+  group_by(interval) %>% 
+  summarize(steps = mean(steps))
+activityweekday$day <- "weekday"
+
+activityweekend <- activityweekend %>% 
+  group_by(interval) %>% 
+  summarize(steps = mean(steps))
+activityweekend$day <- "weekend"
+
+wkdaywkend <- rbind(activityweekday, activityweekend)
+wkdaywkend$day <- as.factor(wkdaywkend$day)
+
+g <- ggplot(wkdaywkend, aes(interval, steps))
+g + geom_line()+ facet_grid(day~.)+ 
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14)) + labs(y = "Number of Steps")+ labs(x = "Interval")+ ggtitle("Average Number of Steps: Weekday vs Weekend") + theme(plot.title = element_text(hjust = 0.5))
+```
+
+![](PA1_template_files/figure-html/panel_plot-1.png)<!-- -->
+
+As we can see, there are slight variations in the number of steps taken during the week vs during the weekends. Weekdays show a spike in early morning, possibly coinciding with people walking to work/school or commute. In comparison, step counts on weekends are largely consistent throughout the day.  

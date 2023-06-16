@@ -41,7 +41,7 @@ hist(stepsperday$sumsteps, main = "Histogram of Daily Steps",
 ```  
   
   c. Calculate and report the mean and median total number of steps taken per day
-``` {r mean and median, echo=TRUE, results='asis'}
+``` {r mean and median, echo=TRUE}
 meansteps <- round(mean(stepsperday$sumsteps))
 mediansteps <- round(median(stepsperday$sumsteps))
 print(paste("The mean is", meansteps))
@@ -61,7 +61,7 @@ plot(stepsperinterval$meansteps1 ~ stepsperinterval$interval,
 ```    
 
   b. Which 5-minute interval, on average across all days in the dataset, contains the maximum number of steps?
-```{r max steps, echo=TRUE, results='asis'}
+```{r max steps, echo=TRUE}
 print(paste("The 5-minute interval containing the most steps on average is",
             stepsperinterval$interval[which.max(stepsperinterval$meansteps1)]))
 print(paste("Average steps for that interval is", round(max(stepsperinterval$meansteps1))))
@@ -69,7 +69,7 @@ print(paste("Average steps for that interval is", round(max(stepsperinterval$mea
 
 ### Question 3: Imputing missing values
   a. Calculate and report the total number of missing values in the dataset. 
-```{r missing, echo=TRUE, results='asis'}
+```{r missing, echo=TRUE}
 print(paste("The total number of rows with missing values is",
             sum(is.na(activity$steps))))
 ```  
@@ -103,7 +103,7 @@ hist(stepsperday$sumsteps, main = "Histogram of Daily Steps",
 
   d. (contd.) Calculate and report the mean and median total number of steps taken each day. Has the value changed from what was initially reported? What is the impact of imputing missing data on the estimates of total number of steps?
   
-```{r new mean and median, echo=TRUE, results='asis'}
+```{r new mean and median, echo=TRUE}
 meanNA <- round(mean(stepsperday$sumsteps), digits = 2)
 medianNA <- round(median(stepsperday$sumsteps), digits = 2)
 
@@ -111,4 +111,48 @@ print(paste("The mean is", mean(meanNA)))
 print(paste("The median is", median(medianNA)))
 ```
 
+```{r compare, echo=TRUE, results='asis'}
+library(xtable)
+NAcompare <- data.frame(mean = c(meansteps, meanNA), median = c(mediansteps, medianNA))
+rownames(NAcompare) <- c("Pre NA transformation", "Post NA Transformation")
+xt <- xtable(NAcompare)
+print (xt, type="html")
+```  
+
+
+As we can see, when the missing values are included we see an increase in the mean and median values from 9354 and 10395 to 10766.19 for both respectively. 
+
 ### Question 4: Are there differences in activity patterns between weekdays and weekends?
+  a. Create a new factor variable in the dataset with two levels- "weekday" and "weekend" indicating whether a given date is a weekday or a weekend.
+  
+```{r day_of_week, echo=TRUE, results='asis'}
+activityDoW <- activitynoNA
+activityDoW$date <- as.Date(activityDoW$date)
+activityDoW$day <- ifelse(weekdays(activityDoW$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+activityDoW$day <- as.factor(activityDoW$day)
+```
+
+  b. Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+```{r panel_plot, echo=TRUE, results='asis'}
+activityweekday <- filter(activityDoW, activityDoW$day == "weekday")
+activityweekend <- filter(activityDoW, activityDoW$day == "weekend")
+
+activityweekday <- activityweekday %>% 
+  group_by(interval) %>% 
+  summarize(steps = mean(steps))
+activityweekday$day <- "weekday"
+
+activityweekend <- activityweekend %>% 
+  group_by(interval) %>% 
+  summarize(steps = mean(steps))
+activityweekend$day <- "weekend"
+
+wkdaywkend <- rbind(activityweekday, activityweekend)
+wkdaywkend$day <- as.factor(wkdaywkend$day)
+
+g <- ggplot(wkdaywkend, aes(interval, steps))
+g + geom_line()+ facet_grid(day~.)+ 
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14)) + labs(y = "Number of Steps")+ labs(x = "Interval")+ ggtitle("Average Number of Steps: Weekday vs Weekend") + theme(plot.title = element_text(hjust = 0.5))
+```  
+
+As we can see, there are slight variations in the number of steps taken during the week vs during the weekends. Weekdays show a spike in early morning, possibly coinciding with people walking to work/school or commute. In comparison, step counts on weekends are largely consistent throughout the day.  
