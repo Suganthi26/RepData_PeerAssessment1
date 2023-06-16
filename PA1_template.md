@@ -192,7 +192,7 @@ print (xt, type="html")
 ```
 
 <!-- html table generated in R 4.3.0 by xtable 1.8-4 package -->
-<!-- Fri Jun 16 08:12:27 2023 -->
+<!-- Fri Jun 16 08:21:46 2023 -->
 <table border=1>
 <tr> <th>  </th> <th> mean </th> <th> median </th>  </tr>
   <tr> <td align="right"> Pre NA transformation </td> <td align="right"> 9354.00 </td> <td align="right"> 10395.00 </td> </tr>
@@ -234,7 +234,12 @@ wkdaywkend$day <- as.factor(wkdaywkend$day)
 
 g <- ggplot(wkdaywkend, aes(interval, steps))
 g + geom_line()+ facet_grid(day~.)+ 
-  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14)) + labs(y = "Number of Steps")+ labs(x = "Interval")+ ggtitle("Average Number of Steps: Weekday vs Weekend") + theme(plot.title = element_text(hjust = 0.5))
+  theme(axis.text = element_text(size = 12), 
+        axis.title = element_text(size = 14)) + 
+  labs(y = "Number of Steps")+ 
+  labs(x = "Interval")+ 
+  ggtitle("Average Number of Steps: Weekday vs Weekend") +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ![](PA1_template_files/figure-html/panel_plot-1.png)<!-- -->
